@@ -220,7 +220,6 @@ hr{
     padding: 15px;
     border: 2px solid rgb(187, 185, 185);
     box-shadow: 15px 15px 15px rgb(1, 1, 85);
-    /* width: 1100px; */
     margin-left: 15%;
 }
 
@@ -243,14 +242,6 @@ hr{
     flex-direction: row;
 }
 
-#WeekMealCard{
-
-}
-
-RecipeImageDiv2{
-
-}
-
-RecipeInfoDiv2{
-
+.stock_name{
+    width: 500px;
 }

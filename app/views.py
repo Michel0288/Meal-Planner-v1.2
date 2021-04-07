@@ -37,9 +37,11 @@ def home():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
+    session['loggedin'] = False
     if request.method == "POST" and form.validate_on_submit():
         username = form.username.data
         password = form.password.data
+
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute('SELECT * FROM account WHERE username = % s AND password = % s', (username, password))        
         user = cur.fetchone()
@@ -51,8 +53,8 @@ def login():
             flash('Success.', 'success')
             return redirect(url_for('home'))
         else:
-            flash('Error.', 'danger')
-            return "error"
+            flash('Incorrect Username or Password!.', 'danger')
+            return redirect(url_for('login'))
 
     flash_errors(form)
     return render_template("login.html", form=form)
@@ -63,6 +65,7 @@ def logout():
     session.pop('loggedin', None)
     session.pop('mealcart', None)
     session.pop('id', None)
+    session.pop('mealcart',None)
     session.pop('username', None)
     return redirect(url_for('login'))    
 

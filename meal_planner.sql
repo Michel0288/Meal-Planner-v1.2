@@ -66,11 +66,9 @@ DROP TABLE IF EXISTS kitchen_stock;
 
 CREATE TABLE kitchen_stock(
     stock_id INT NOT NULL unique AUTO_INCREMENT,
-    -- mealplan_id INT NOT NULL,
     stock_name VARCHAR(200),
     quantity INT,
-    PRIMARY KEY(stock_id),
-    -- FOREIGN KEY(mealplan_id) REFERENCES meal_plan(mealplan_id) ON DELETE CASCADE ON UPDATE CASCADE
+    PRIMARY KEY(stock_id)
 );
 
 DROP PROCEDURE IF EXISTS FindIngredients;
@@ -101,7 +99,6 @@ END //
 DELIMITER ;
 
 DROP PROCEDURE IF EXISTS supermarketlist;
-
 DELIMITER //
 CREATE PROCEDURE supermarketlist(IN id INT)
 BEGIN

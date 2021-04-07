@@ -2,7 +2,9 @@
 
 {% block main %}
 
-<div class="card">
+{% include 'flash_messages.html' %}
+
+<div class="card" style="width: 550px;">
     <h1 class="page-header">Kitchen Stock</h1>
     <hr>
 
@@ -11,16 +13,19 @@
         {{ form.csrf_token }}
 
         <div class="form-group">
-            {{ form.stock_name.label(class="title") }} (Required) <p>Please enter stock name</p>
+            {{ form.stock_name.label(class="title") }} <span style="font-weight: bolder;">(Required)</span> <p>Please enter stock name</p>
             {{ form.stock_name(class="stock_name") }}
         </div>
 
         <div class="form-group">
-            {{ form.quantity.label(class="title") }} (Required) <p>Please enter the quantity</p>
+            {{ form.quantity.label(class="title") }} <span style="font-weight: bolder;">(Required)</span> <p>Please enter the quantity</p>
             {{ form.quantity(class="stock_name") }}
         </div>
         <br>
-        <button type="send">Submit</button>
+        <div style="text-align: center;">
+            <button class="btn btn-primary" type="send">Add Kitchen Stock</button>
+        </div>
+
     </form>
 </div>
 {% endblock %}

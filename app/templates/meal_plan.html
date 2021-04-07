@@ -14,19 +14,22 @@
   {%endif%}
   <button type="submit" class="btn btn-primary">Add Meal</button>
 </form>
-{% for key,recipe in session['mealcart'].items()%}
-<div class="card" style="width: 18rem;">
-    <img class="card-img-top" src="/uploads/{{recipe.image}}" alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title">Meal: {{recipe.name}}</h5>
-      <h5 class="card-title">Meal Type: {{recipe.type}}</h5>
-      <h5 class="card-title">servings: {{recipe.servings}}</h5>
-      <p class="card-text"></p>
-      <div style="text-align: center;">
-        <a href="{{url_for('deleteitemcart',code=key)}} " class="btn btn-danger" id="checkoutbutton2">Remove</a>
+<div class="RecipeCards">
+  {% for key,recipe in session['mealcart'].items()%}
+  <div class="card" id="RecipeCard" style="width: 35rem;">
+      <img class="RecipeImage" src="/uploads/{{recipe.image}}" alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">Meal: {{recipe.name}}</h5>
+        <h5 class="card-title">Meal Type: {{recipe.type}}</h5>
+        <h5 class="card-title">servings: {{recipe.servings}}</h5>
+        <p class="card-text"></p>
+        <div style="text-align: center;">
+          <a href="{{url_for('deleteitemcart',code=key)}} " class="btn btn-danger" id="checkoutbutton2">Remove</a>
+        </div>
       </div>
-    </div>
   </div>
 {% endfor%}
+
+</div>
 
 {% endblock %}
