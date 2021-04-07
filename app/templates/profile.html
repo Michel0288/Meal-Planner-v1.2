@@ -57,48 +57,32 @@
 <hr>
 
 
-<div class="RecipeCards2">
+<div class="RecipeCards">
     <h2>MEAL PLAN FOR WEEK {{p_meals.meal_week}}</h2>
-    {{p_meals}}
     {%for p_meal in p_meals%}
-    <h2>MEAL PLAN FOR WEEK {{p_meal.meal_week}}</h2>
-    <div class="card"  id="cardid" style="padding:5px; margin-bottom:20px;">
-        <div class="RecipeImageDiv">
+    <div class="card"  id="RecipeCard" style="padding:20px; margin-bottom:20px;">
+        <div class="RecipeTitle">
+            <h2 class="card-title" id="recipename">{{p_meal.recipe_name}}</h2>
+        </div>
+        <div class="RecipeImageDiv2">
             <img class="RecipeImage" src="/uploads/{{p_meal.photo}}" alt="Recipe Image">
         </div>
-        <div class="RecipeInfoDiv">
-            <div>
-                <h4 class="card-title" id="recipename">{{p_meal.recipe_name}}</h4>
-            </div>
+        <hr>
+        <div class="RecipeInfoDiv2">  
             <div class="row" id="RowFlex" style="margin-left: 20px;">
                 <div class="">
                     <h5 class= "" id="Recipemealtype">{{p_meal.meal_type}}</h5>
                 </div>
                 <div class="">
                     <h5 class= "" id="Recipeservings">{{p_meal.servings}} servings</h5>
-                </div>           
-            </div>  
-            <div class="row">
-                <h5 class="card-preptime" id="Recipepreptime">Preparation Time: {{p_meal.preparation_time}}</h5>
-            </div>
-            <div class="row" style="padding-bottom: 5px;">
-                <h5 class="" id="Recipeingredients">Ingredients: {{p_meal.ingredient_name}} </h5>
-            </div>
-
-            <div class="row" style="padding-bottom: 5px;">
-                <h5 class="" id="Recipemeasurements">Measurements: {{p_meal.measurement}} </h5>
-            </div>
-
-            <div class="row">
-                <h5 class="card-procedure" id="Recipeprocedure">Step {{p_meal.step_no}}: {{p_meal.instruction}} </h5>
-            </div>
-
-            <div class="row" style="padding-bottom: 5px;">
-                <h5 class="" id="RecipeCalories">Total Calories: {{p_meal.calories_count}} </h5>
+                </div>         
             </div>
         </div>
+        <div class="btn2" style="text-align: center;">
+            <a href="/meal_detail/{{p_meal.recipe_id}}" class="btn btn-primary">View Details</a>
+        </div> 
     </div>    
-    {%endfor%}
+    {% endfor %}
 </div>
 
 

@@ -112,9 +112,32 @@ def profile():
 
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # cur.execute('SELECT * FROM meal_plan join instructions on recipe_id join ingredients on recipe_id WHERE account_id = %s and', (session['id'],)) 
-        cur.execute('SELECT * FROM meal_plan JOIN instructions ON instructions.recipe_id=meal_plan.recipe_id JOIN recipe ON recipe.recipe_id=meal_plan.recipe_id JOIN ingredients ON ingredients.recipe_id=meal_plan.recipe_id')     
+        # cur.execute('SELECT * FROM meal_plan JOIN instructions ON instructions.recipe_id=meal_plan.recipe_id  JOIN recipe ON recipe.recipe_id=meal_plan.recipe_id  JOIN ingredients ON ingredients.recipe_id=meal_plan.recipe_id ')     
+        cur.execute('SELECT * FROM recipe WHERE recipe_id IN (SELECT recipe_id FROM meal_plan)') 
         p_meals = cur.fetchall()
         cur.close()
+
+        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # cur.execute('SELECT * FROM meal_plan') 
+        # mealplan = cur.fetchone()
+        # cur.close()
+
+        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # cur.execute('SELECT * FROM ingredients WHERE recipe_id IN (SELECT recipe_id FROM meal_plan)') 
+        # ingredients = cur.fetchall()
+        # cur.close()
+
+        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # cur.execute('SELECT calories_count, SUM(calories_count) AS totalcalories FROM ingredients WHERE recipe_id IN (SELECT recipe_id FROM meal_plan)') 
+        # total_calories = cur.fetchall()
+        # cur.close()
+
+       
+
+        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # cur.execute('CALL CalculateTotalCalories(%s)', (id,))     
+        # total_calories = cur.fetchone()
+        # cur.close()
         
     return render_template("profile.html", user=user,p_meals=p_meals)
 
@@ -127,8 +150,9 @@ def results():
     else:
         input_values = request.form.getlist('input_text[]')
         input_values2 = request.form.getlist('input_cal')
+        input_values3=request.form.getlist('input_measurements')
         return render_template('dynamic_input_results.html',
-                               input_values = input_values,input_values2=input_values2)
+                               input_values = input_values,input_values2=input_values2,input_values3=input_values3)
 
 @app.route('/recipe', methods=['POST', 'GET'])
 def recipe():
@@ -145,6 +169,7 @@ def recipe():
         photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         ingredients_name = request.form.getlist('input_text[]')
         calories = request.form.getlist('input_cal')
+        measurements=request.form.getlist('input_measurements')
         totalcalories=0
         for i in calories:
             totalcalories+=int(i)
@@ -152,12 +177,6 @@ def recipe():
         cur.execute("INSERT INTO recipe(recipe_name,preparation_time,meal_type,servings,photo,totalcalories) VALUES (%s,%s,%s,%s,%s,%s)", (recipe_name,prep_time,mealtype,servings,filename,totalcalories))
         mysql.connection.commit()
         cur.close()
-
-
-
-        # ingredient_name = recipeform.ingredient_name.data
-        # calories = recipeform.calories.data
-        measurements = recipeform.measurements.data
 
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cur.execute('SELECT MAX(recipe_id) FROM recipe')        
@@ -168,7 +187,7 @@ def recipe():
 
         for i in range(len(ingredients_name)):
             cur=mysql.connection.cursor()
-            cur.execute("INSERT INTO ingredients (ingredient_name,calories_count,measurement,recipe_id) VALUES (%s,%s,%s,%s)", (ingredients_name[i], calories[i], measurements,recipe_id))
+            cur.execute("INSERT INTO ingredients (ingredient_name,calories_count,measurement,recipe_id) VALUES (%s,%s,%s,%s)", (ingredients_name[i], calories[i], measurements[i],recipe_id))
             mysql.connection.commit()
             cur.close()
 
@@ -281,8 +300,13 @@ def meal_detail(id):
     form = SearchForm()
 
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute('SELECT * FROM ingredients WHERE recipe_id = %s', (id,))     
+    cur.execute('CALL FindIngredients(%s)', (id,))     
     ingredient = cur.fetchall()
+    cur.close()
+
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute('CALL CalculateTotalCalories(%s)', (id,))     
+    total_calories = cur.fetchone()
     cur.close()
 
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -295,7 +319,7 @@ def meal_detail(id):
     instruction = cur.fetchall()
     cur.close()
 
-    return render_template('meal_detail.html', ingredient=ingredient, recipes=recipes, instruction=instruction)
+    return render_template('meal_detail.html', ingredient=ingredient, recipes=recipes, instruction=instruction, total_calories=total_calories)
     # return redirect(url_for("search_meal"))
 
 @app.route("/search_meal", methods=["GET", "POST"])
@@ -306,7 +330,7 @@ def search_meal():
         search = form.search.data
 
         cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cur.execute('SELECT * FROM recipe WHERE recipe_name like %s OR totalcalories <= %s', ('%' + search + '%', search,)) 
+        # cur.execute('SELECT * FROM recipe WHERE recipe_name like %s OR totalcalories <= %s', ('%' + search + '%', search,)) 
         cur.execute('CALL SearchFilter(%s)', (search,))        
         recipes = cur.fetchall()
 
@@ -339,7 +363,7 @@ def get_image(filename):
 @app.route('/SignUp', methods=['POST', 'GET'])
 def signup():
     form = SignUpForm()
-    if request.method == 'POST' and form.validate_on_submit():
+    if request.method == 'POST' :
         firstname = form.firstname.data
         lastname = form.lastname.data
         username = form.username.data
@@ -358,7 +382,7 @@ def signup():
         photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
         cur=mysql.connection.cursor()
-        cur.execute("INSERT INTO account (firstname,lastname,username,password,age,gender,height,weight,allergies,dietarylifestyle,dietaryrestrictions,goal,dailycalories,photo) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (firstname,lastname,username,password,age,gender,height,weight,allergies,dietarylifestyle,dietaryrestrictions,goal,dailycalories,filename))
+        cur.execute("INSERT INTO account (firstname,lastname,username,password,age,gender,height,weight,allergies,dietarylifestyle,goal,photo) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (firstname,lastname,username,password,age,gender,height,weight,allergies,dietarylifestyle,goal,filename))
         mysql.connection.commit()
         cur.close()
         flash("Signup Successful!", 'success')

@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block main %}
-{{session['mealcart']}}
 <h3>Click button to submit plan for the week</h3>
 <form action="{{url_for('checkout')}}" method="POST">
   <label for="start">Week Plan Date:</label>
@@ -18,11 +17,13 @@
 <div class="card" style="width: 18rem;">
     <img class="card-img-top" src="/uploads/{{recipe.image}}" alt="Card image cap">
     <div class="card-body">
-      <h5 class="card-title">{{recipe.name}}</h5>
-      <h5 class="card-title">{{recipe.name}}</h5>
-      <h5 class="card-title">{{recipe.name}}</h5>
+      <h5 class="card-title">Meal: {{recipe.name}}</h5>
+      <h5 class="card-title">Meal Type: {{recipe.type}}</h5>
+      <h5 class="card-title">servings: {{recipe.servings}}</h5>
       <p class="card-text"></p>
-      <a href="{{url_for('deleteitemcart',code=key)}} " class="btn btn-danger" id="checkoutbutton2">Remove</a>
+      <div style="text-align: center;">
+        <a href="{{url_for('deleteitemcart',code=key)}} " class="btn btn-danger" id="checkoutbutton2">Remove</a>
+      </div>
     </div>
   </div>
 {% endfor%}

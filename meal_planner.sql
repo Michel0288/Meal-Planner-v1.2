@@ -53,17 +53,6 @@ CREATE TABLE instructions(
     PRIMARY KEY(instruction_id),
     foreign key(recipe_id) references recipe(recipe_id) 
 );
-/* SELECT stock_name FROM kitchen_stock JOIN ingredients ON stock_name=ingredient_name; WHERE meal_plan.mealplan_id NOT IN (SELECT mealplan_id FROM kitchen_stock;); SELECT ingredient_name FROM ingredients JOIN recipe on ingredients.recipe_id=recipe.recipe_id JOIN meal_plan on meal_plan.recipe_id = recipe.recipe_id SELECT * FROM meal_plan WHERE mealplan_id NOT IN (SELECT mealplan_id FROM kitchen_stock)*/
-SELECT stock_name FROM kitchen_stock JOIN ingredients ON stock_name=ingredient_name WHERE ingredient_name NOT IN (SELECT stock_name FROM kitchen_stock)DROP TABLE IF EXISTS kitchen_stock;
-CREATE TABLE kitchen_stock(
-    stock_id INT NOT NULL unique AUTO_INCREMENT,
-    mealplan_id INT NOT NULL,
-    stock_name VARCHAR(200),
-    quantity INT,
-    PRIMARY KEY(stock_id),
-    FOREIGN KEY(mealplan_id) REFERENCES meal_plan(mealplan_id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 DROP TABLE IF EXISTS meal_plan;
 CREATE TABLE meal_plan(
     mealplan_id INT NOT NULL unique AUTO_INCREMENT,
@@ -73,18 +62,47 @@ CREATE TABLE meal_plan(
     foreign key(recipe_id) references recipe(recipe_id) ON DELETE CASCADE ON UPDATE CASCADE,
     foreign key(account_id) references account(account_id) 
 );
+DROP TABLE IF EXISTS kitchen_stock;
+
+CREATE TABLE kitchen_stock(
+    stock_id INT NOT NULL unique AUTO_INCREMENT,
+    mealplan_id INT NOT NULL,
+    stock_name VARCHAR(200),
+    quantity INT,
+    PRIMARY KEY(stock_id),
+    FOREIGN KEY(mealplan_id) REFERENCES meal_plan(mealplan_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+DROP PROCEDURE IF EXISTS FindIngredients;
 
 DELIMITER //
-CREATE PROCEDURE SearchFilter(IN searchitem VARCHAR(100))
+CREATE PROCEDURE  FindIngredients(IN id INT)
 BEGIN
-SELECT * FROM recipe WHERE recipe_name like %searchitem% OR totalcalories <= searchitem;
+SELECT * FROM ingredients WHERE recipe_id = id;
 END //
 DELIMITER ;
 
-
+DROP PROCEDURE IF EXISTS CalculateTotalCalories;
 
 DELIMITER //
-CREATE PROCEDURE supermarketlist
+CREATE PROCEDURE  CalculateTotalCalories(IN id INT)
+BEGIN
+SELECT calories_count,SUM(calories_count) AS totalcalories FROM ingredients WHERE recipe_id = id GROUP BY recipe_id;
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS SearchFilter;
+DELIMITER //
+CREATE PROCEDURE SearchFilter(IN searchitem VARCHAR(100))
+BEGIN
+SELECT * FROM recipe WHERE recipe_name like CONCAT('%',searchitem,'%') OR totalcalories <= searchitem;
+END //
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS supermarketlist;
+
+DELIMITER //
+CREATE PROCEDURE supermarketlist()
 BEGIN
 SELECT ingredient_name FROM ingredients JOIN recipe ON recipe.recipe_id=ingredients.recipe_id JOIN meal_plan on meal_plan.recipe_id = recipe.recipe_id WHERE ingredient_name NOT IN (SELECT stock_name FROM kitchen_stock);
 END //

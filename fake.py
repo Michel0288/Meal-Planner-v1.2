@@ -6,8 +6,12 @@ fake = Faker()
 import random
 from random import randint
 from datetime import date
+import os
 date_today = date.today()
-f = open("project.sql", "w")
+path='/media/michel/External Drive/db'
+filename="project.sql"
+completename=os.path.join(path, filename)
+f = open(completename, "w")
 
 usertable=200000
 
@@ -40,11 +44,11 @@ for i in range(recipetable):
     p_time=randint(5,120)
     servings=randint(1,10)
     f.write('INSERT INTO recipe(recipe_id,recipe_name,preparation_time,meal_type,servings,photo,dateadded) VALUES('+str(id)+','+'"'+random.choice(recipe_name)+'"'+','+str(p_time)+','+'"'+random.choice(meal_type)+'"'+','+str(servings)+','+'"'+random.choice(photo)+'"'+','+'"'+str(date_today)+'"'+');'+'\n')
-    for x in range(recipetable):
+    for x in range(5):
         instruction_id+=(x+3)
         step_no=x+1
         f.write('INSERT INTO instructions VALUES('+str(instruction_id)+','+str(step_no)+','+'"'+random.choice(instructions)+'"'+','+str(id)+');'+'\n')
-    for m in range(recipetable):
+    for m in range(3):
         ingredient_id+=(m+2)
         calories=randint(1,200)
         f.write('INSERT INTO ingredients VALUES('+str(ingredient_id)+','+'"'+random.choice(ingredient)+'"'+','+str(calories)+','+'"'+random.choice(measurement)+'"'+','+str(id)+');'+'\n')

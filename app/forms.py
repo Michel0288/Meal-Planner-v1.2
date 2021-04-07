@@ -19,7 +19,7 @@ class SignUpForm(FlaskForm):
     age = IntegerField('Age', validators=[DataRequired()], description="Please enter your age.")
     gender = SelectField('Gender', choices=[('Male'), ('Female'), ('Other')], description="Please select your gender.")
     height = StringField('Height', validators=[DataRequired()], description="Please select you height.")
-    weight = StringField('Weight', validators=[DataRequired()], description="Please eneter your weight.")
+    weight = StringField('Weight', validators=[DataRequired()], description="Please enter your weight.")
     allergies = StringField('Food Allergies', validators=[DataRequired()], description="Please enter any food or ingredients you are allergic to.")
     dietarylifestyle = SelectField('Dietary Lifestyle', validators=[DataRequired()], choices=[('None'), ('Vegan'), ('Vegetarian'), ('Pescatarian')], description="Please select a dietary lifestyle.")
     dietaryrestrictions = SelectField('Dietary Restrictions', validators=[DataRequired()], choices=[('None'), ('Lactose Intolerance'), ('Diabetic'), ('High Blood Pressure')], description="Please select a dietary restriction.")

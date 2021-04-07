@@ -6,7 +6,7 @@
 <div class="RecipeCards2">
     {% for recipe in recipes %}
     <div class="card" id="cardid" style="width:1000px;">
-        <div class="RecipeImageDiv">
+        <div class="RecipeImageDiv" style="padding-right: 10px; text-align: center;">
             <img class="RecipeImage2" src="/uploads/{{recipe.photo}}" alt="Recipe Image">
         </div>
         <div class="RecipeInfoDiv">
@@ -14,7 +14,7 @@
                 <h2 class="card-title" id="Recipename" style="font-weight: bolder; text-align: center;">{{recipe.recipe_name}}</h2>
             </div>
     
-            <div class="row" id="RowFlex" style="padding-bottom: 5px;">
+            <div class="row" id="RowFlex" style="padding-bottom: 5px; text-align: center;">
                 <div class="" style="margin-right: 40px; margin-left: 100px;">
                     <h5 class="card-mealtype" id="Recipemealtype">{{recipe.meal_type}}</h5>
                 </div>
@@ -28,26 +28,35 @@
                 <h5 class="card-preptime" id="Recipepreptime">Preparation Time: {{recipe.preparation_time}}</h5>
             </div>
 
+            <div class="row" style="padding-bottom: 5px;">
+                <h5 class="" id="RecipeCalories">Total Calories: {{total_calories.totalcalories}} </h5>
+            </div>
 
+            <hr> 
+
+            <h5 style="text-align: left;">Ingredients</h5>
             {% for ingred in ingredient %}
-            <div class="row" style="padding-bottom: 5px;">
-                <h5 class="" id="Recipeingredients">Ingredients: {{ingred.ingredient_name}} </h5>
-            </div>
-
-            <div class="row" style="padding-bottom: 5px;">
-                <h5 class="" id="Recipemeasurements">Measurements: {{ingred.measurement}} </h5>
-            </div>
-
-            <div class="row" style="padding-bottom: 5px;">
-                <h5 class="" id="RecipeCalories">Total Calories: {{ingred.calories_count}} </h5>
-            </div>
+            <ul class="row" style="padding-bottom: 5px;">
+                <li class="" id="Recipeingredients"> {{ingred.ingredient_name}} </li>
+            </ul>
             {% endfor %}
 
-            <h3 style="text-align:center;"> Instructions </h3>
+            <hr>
+
+            <h5 style="text-align: left;">Measurements</h5>
+            {% for ingred in ingredient %}
+            <ul class="row" style="padding-bottom: 5px;">
+                <li class="" id="Recipemeasurements">{{ingred.measurement}} </li>
+            </ul>
+            {% endfor %}
+
+            <hr>
+            
+            <h5 style="text-align:left;"> Instructions </h5>
             {% for instruct in instruction %}
-            <div class="row">
-                <h5 class="card-procedure" id="Recipeprocedure">Step {{instruct.step_no}}: {{instruct.instruction}} </h5>
-            </div>
+            <ul class="row">
+                <li class="card-procedure" id="Recipeprocedure">Step {{instruct.step_no}}: {{instruct.instruction}} </li>
+            </ul>
             {% endfor %}
                 
             <div class="btn1" style="text-align: center;">

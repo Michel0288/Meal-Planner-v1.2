@@ -1,5 +1,6 @@
 {{input_values2}}
 {{input_values}}
+{{input_values3}}
 <ul>
     {% for value in input_values %}
         <li>{{value}}</li>
@@ -8,5 +9,7 @@
     {% for value2 in input_values2 %}
         <li>{{value2}}</li>
     {% endfor %}
-    
+    {% for value2 in input_values3 %}
+    <li>{{value2}}</li>
+{% endfor %}
     </ul>
