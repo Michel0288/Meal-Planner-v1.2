@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="card">
+  <h1>WELCOME TO WEEKLY DELIGHT!</h1>
+  <h3>SIGN UP</h3>
+  {% include 'flash_messages.html' %}
+  <form class="Form" enctype="multipart/form-data" action="{{ url_for('signup') }}" method="POST">
+    {{ form.csrf_token }}
+
+    <div class="row">
+      <div class="col">
+        {{ form.firstname.label }} <span>(Required)</span> <br>
+        {{ form.firstname.description }}
+        {{ form.firstname(class='form-control') }}
+      </div>
+
+      <div class="col">
+        {{ form.lastname.label }} <span>(Required)</span> <br>
+        {{ form.lastname.description }}
+        {{ form.lastname(class='form-control') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.username.label }} <span>(Required)</span> <br>
+      {{ form.username.description }}
+      {{ form.username(class='form-control') }}
+    </div>
+
+    <div class="form-group">
+      {{ form.password.label }} <span>(Required)</span> <br>
+      {{ form.password.description }}
+      {{ form.password(class='form-control') }}
+    </div>
+
+    <div class="row">
+      <div class="col">
+        {{ form.age.label }} <span>(Required)</span> <br>
+        {{ form.age.description }}
+        {{ form.age(class='form-control') }} 
+      </div>
+
+      <div class="col">
+        {{ form.gender.label }} <span>(Required)</span> <br> 
+        {{ form.gender.description }}
+        {{ form.gender(class='form-control', placeholder="Enter your gender") }}
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col">
+        {{ form.weight.label }} <span>(Required)</span> <br> 
+        {{ form.weight.description}}
+        {{ form.weight(class='form-control') }}
+      </div>
+
+      <div class="col">
+        {{ form.height.label }} <span>(Required)</span> <br> 
+        {{ form.height.description}}
+        {{ form.height(class='form-control') }}
+      </div>
+    </div>
+    
+    <div class="form-group">
+      {{ form.allergies.label }} <span>(Required)</span> <br> 
+      {{ form.allergies.description }}
+      {{ form.allergies(class='form-control') }}
+    </div>
+
+    <div class="form-group">
+      {{ form.dietarylifestyle.label }} <span>(Required)</span> <br> 
+      {{ form.dietarylifestyle.description }}
+      {{ form.dietarylifestyle(class='form-control') }}
+    </div>
+
+    <div class="row">
+      <div class="col">
+        {{ form.dietaryrestrictions.label }} <span>(Required)</span> <br> 
+        {{ form.dietaryrestrictions.description }}
+        {{ form.dietaryrestrictions(class='form-control') }}
+      </div>
+
+      <div class="col">
+        {{ form.goal.label }} <span>(Required)</span> <br> 
+        {{ form.goal.description }}
+        {{ form.goal(class='form-control') }}
+      </div>
+    </div>
+    
+    <div class="form-group">
+      {{ form.dailycalories.label }} <span>(Required)</span> <br> 
+      {{ form.dailycalories.description}}
+      {{ form.dailycalories(class='form-control') }}
+    </div>
+
+    <div class="form-group">
+      {{ form.photo.label(class="title") }} <span>(Required)</span> <br>
+      {{ form.photo.description }}
+      {{ form.photo(class='form-control', style='border:none;') }}
+    </div>
+
+
+    <div class="ButtonDiv">
+      <button type="submit" name="submit" class="btn btn-primary">SIGN UP</button>
+    </div>
+  </form>
+  <h5>Do you already have an account? <a class="LoginLink" href="{{ url_for('login') }}">Login</a></h5>
+
+</div>
+
+{% endblock %}

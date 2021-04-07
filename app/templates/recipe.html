@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block main %}
+<script src="/app/static/js/app.js"></script>
+<div class="card">
+    <h1 class="page-header">ADD RECIPES AND INGREDIENTS</h1>
+<h3>RECIPE</h3>
+<form enctype="multipart/form-data" action="{{ url_for('recipe') }}" method="POST">
+    <script>
+        function add_field()
+        {
+          var total_text=document.getElementsByClassName("input_text");
+          total_text=total_text.length+1;
+          field_div = document.getElementById("field_div");
+          new_input = "<li id='input_text"+total_text+"_wrapper'>";
+          new_input += "<input type='text' class='input_text' name='input_text[]' id='input_text"+
+          total_text+"' placeholder='Enter Text'>";
+          total_text+"'";
+          new_input += "<input type='text' name='input_cal' value='' placeholder='Enter Calories' id='input_checkbox"+
+          total_text+"'";
+          new_input += "</li>";
+          field_div.insertAdjacentHTML('beforeend',new_input);
+        }
+        function remove_field()
+        {
+          var total_text=document.getElementsByClassName("input_text");
+          document.getElementById("input_text"+total_text.length+"_wrapper").remove();     
+        }
+      </script>
+      
+    {{ form.csrf_token }}
+
+    <div class="form-group">
+        {{ form.recipe_name.label(class="title") }} <span>(Required)</span> <br>
+        {{ form.recipe_name.description }}
+        {{ form.recipe_name(class='form-control') }}
+    </div>
+ 
+    <div class="form-group">
+         {{ form.procedure.label(class="title")}} <span>(Required)</span> <br>
+         {{ form.procedure.description }}
+         {{ form.procedure(class='form-control') }}
+    </div>
+ 
+    <div class="form-group">
+            {{ form.prep_time.label(class="title") }} <span>(Required)</span> <br>
+            {{ form.prep_time.description }}
+            {{ form.prep_time(class='form-control') }}
+    </div>
+
+    <div class="row">
+        <div class="col">
+            {{ form.mealtype.label(class="title") }} <span>(Required)</span> <br>
+            {{ form.mealtype.description }}
+            {{ form.mealtype(class='form-control') }}
+        </div>
+    
+        <div class="col">
+            {{ form.servings.label(class="title") }} <span>(Required)</span> <br>
+            {{ form.servings.description }}
+            {{ form.servings(class='form-control') }}
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form.photo.label(class="title") }} <span>(Required)</span> <br>
+        {{ form.photo.description }}
+        {{ form.photo(class='form-control', style='border:none;') }}
+    </div>
+
+    <hr>
+
+    <h3>INGREDIENTS</h3>
+
+    <div class="row">
+        <div class="col">
+            {{ form.ingredient_name.label(class="title") }} <span>(Required)</span> <br>
+            {{ form.ingredient_name.description }}
+            <div class="col">
+                <div id="wrapper">
+                    <input class="btn btn-primary" type="button" value="Add Ingredient" onclick="add_field();">
+                    <input class="btn btn-primary" type="button" value="Remove" onclick="remove_field();">
+                    <ol id="field_div">
+                    </ol>
+                  </div> 
+            </div>
+        </div>
+    
+        <div class="col">
+            {{ form.calories.label(class="title") }} <span>(Required)</span> <br>
+            {{ form.calories.description }}
+            {{ form.calories(class='form-control') }}
+        </div>
+    </div>
+ 
+     <div class="form-group">
+         {{ form.measurements.label(class="title") }} <span>(Required)</span> <br>
+         {{ form.measurements.description }}
+         {{ form.measurements(class='form-control') }}
+     </div>
+
+     <br>
+    
+    <button type="submit" class="btn btn-primary">Add Recipe</button>
+ </form>
+
+</div>
+
+{% endblock %}

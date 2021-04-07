@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block main %}
+
+<div class="card" id="LoginDiv">
+  <h1>WELCOME TO WEEKLY DELIGHT!</h1>
+  <form class="Form" action="{{ url_for('login') }}" method="POST">
+    {{ form.csrf_token }}
+    <div class="form-group">
+      {% include 'flash_messages.html' %}
+      {{ form.username.label }}
+      {{ form.username(class='form-control', id='form-field', placeholder="Enter your username") }}
+    </div>
+
+    <div class="from-group">
+      {{ form.password.label }}
+      {{ form.password(class='form-control', id='form-field', placeholder="Enter your password") }}
+    </div>
+
+    <div class="ButtonDiv">
+      <button type="submit" name="submit" class="btn btn-primary">Log in</button>
+    </div>
+
+    <h5>Don't have an account? <a class="SignupLink" href="{{ url_for('signup') }}">Sign Up</a></h5>     
+  </form>
+</div>
+{% endblock %}

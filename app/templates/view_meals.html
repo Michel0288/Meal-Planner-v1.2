@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>MEALS</h1>
+
+<form class="RecipeForm"  method="POST"  action="{{ url_for('search_meal') }}">
+    {{ form.csrf_token }}
+
+    <div>
+        {{form.search(class="SearchField", placeholder="Search for meals or filter by calories")}}
+    </div>
+    
+    <div class="btn2">
+        <button type="submit" name="submit" class="btn btn-primary">SEARCH</button>
+    </div>
+
+</form>
+
+<div class="RecipeCards">
+    {% for recipe in recipes %}
+    <div class="card" id="RecipeCard">
+        <div>
+            <img class="RecipeImage" src="/uploads/{{recipe.photo}}" alt="Recipe Image">
+        </div>
+        <div>
+            <h2 class="card-title" id="recipename">{{recipe.recipe_name}}</h2>
+        </div>
+        <div class="row" id="RowFlex" style="margin-left: 20px;">
+            <div class="">
+                <h5 class= "" id="Recipemealtype">{{recipe.meal_type}}</h5>
+            </div>
+            <div class="">
+                <h5 class= "" id="Recipeservings">{{recipe.servings}} servings</h5>
+            </div>           
+        </div>  
+        <div class="RecipeButtons" id="RecipeButtons">
+            <div class="btn1">
+                <form  action="{{url_for('AddMeal')}}" method="POST">
+                    <input type="hidden" name="recipe_id" value="{{recipe.recipe_id}}">
+                    <button type="submit" class="btn btn-primary">Add Recipe</button>
+                </form>
+            </div>
+            <div class="btn2">
+                <a href="/meal_detail/{{recipe.recipe_id}}" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+
+{% endblock %}

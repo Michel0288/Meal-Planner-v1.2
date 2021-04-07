@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>MEAL DETAILS</h1>
+
+<div class="RecipeCards2">
+    {% for recipe in recipes %}
+    <div class="card" id="cardid" style="width:1000px;">
+        <div class="RecipeImageDiv">
+            <img class="RecipeImage2" src="/uploads/{{recipe.photo}}" alt="Recipe Image">
+        </div>
+        <div class="RecipeInfoDiv">
+            <div>
+                <h2 class="card-title" id="Recipename" style="font-weight: bolder; text-align: center;">{{recipe.recipe_name}}</h2>
+            </div>
+    
+            <div class="row" id="RowFlex" style="padding-bottom: 5px;">
+                <div class="" style="margin-right: 40px; margin-left: 100px;">
+                    <h5 class="card-mealtype" id="Recipemealtype">{{recipe.meal_type}}</h5>
+                </div>
+                
+                <div class="">
+                    <h5 class="card-servings" id="Recipeservings">{{recipe.servings}} servings</h5>
+                </div>
+            </div>
+
+            <div class="row">
+                <h5 class="card-preptime" id="Recipepreptime">Preparation Time: {{recipe.preparation_time}}</h5>
+            </div>
+
+
+            {% for ingred in ingredient %}
+            <div class="row" style="padding-bottom: 5px;">
+                <h5 class="" id="Recipeingredients">Ingredients: {{ingred.ingredient_name}} </h5>
+            </div>
+
+            <div class="row" style="padding-bottom: 5px;">
+                <h5 class="" id="Recipemeasurements">Measurements: {{ingred.measurement}} </h5>
+            </div>
+
+            <div class="row" style="padding-bottom: 5px;">
+                <h5 class="" id="RecipeCalories">Total Calories: {{ingred.calories_count}} </h5>
+            </div>
+            {% endfor %}
+
+            <h3 style="text-align:center;"> Instructions </h3>
+            {% for instruct in instruction %}
+            <div class="row">
+                <h5 class="card-procedure" id="Recipeprocedure">Step {{instruct.step_no}}: {{instruct.instruction}} </h5>
+            </div>
+            {% endfor %}
+                
+            <div class="btn1" style="text-align: center;">
+                <a href="#" class="btn btn-primary">Add Recipe</a>
+            </div>
+            
+        </div>
+        
+    </div>
+   
+    {% endfor %}
+
+    
+{% endblock %}
