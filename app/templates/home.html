@@ -3,4 +3,11 @@
 {% block main %}
 <h1 class="page-header">WEEKLY DELIGHTS</h1>
 {% include 'flash_messages.html' %}
+<h2>Supermarket List</h2>
+{%for mlist in marketlist%}
+<ul>
+    <li>{{mlist.measurement}} {{mlist.ingredient_name}}</li>
+</ul>
+{% endfor %}
+
 {% endblock %}

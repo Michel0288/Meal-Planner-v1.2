@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% block main %}
+{% include 'flash_messages.html' %}
 <h3>Click button to submit plan for the week</h3>
 <form action="{{url_for('checkout')}}" method="POST">
   <label for="start">Week Plan Date:</label>
-  {% if week == None %}
+  {% if week['MAX(meal_week)'] == None %}
   <input type="date" id="start" name="week-date"
          value="{{newdate}}" min="{{newdate}}" max="">
   {%else%}

@@ -18,6 +18,12 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('getmeals') }}">Meal Plan ({{session['mealcart']|length}})</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('kitchen_stock') }}">Kitchen Stock</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('recipe') }}">Add Recipe</a>
+      </li>
     </ul>
 
     <ul class="navbar-nav">

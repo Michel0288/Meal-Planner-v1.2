@@ -57,9 +57,22 @@
 <hr>
 
 
+<form class="RecipeForm"  method="POST"  action="{{ url_for('profile') }}">
+    {{ form.csrf_token }}
+
+    <div>
+        {{form.search2(class="SearchField", placeholder="Year-Month-Day")}}
+    </div>
+    
+    <div class="btn2">
+        <button type="submit" name="submit" class="btn btn-primary">SEARCH</button>
+    </div>
+
+</form>
+
+<h2>MEAL PLAN FOR WEEK {{p_meals.meal_week}}</h2>
+{%for p_meal in p_meals%}
 <div class="RecipeCards">
-    <h2>MEAL PLAN FOR WEEK {{p_meals.meal_week}}</h2>
-    {%for p_meal in p_meals%}
     <div class="card"  id="RecipeCard" style="padding:20px; margin-bottom:20px;">
         <div class="RecipeTitle">
             <h2 class="card-title" id="recipename">{{p_meal.recipe_name}}</h2>

@@ -42,6 +42,11 @@ class RecipeForm(FlaskForm):
 class SearchForm(FlaskForm):
     search = StringField('Search', description="Please enter meal you wish to search for.")
 
+
+class SearchForm2(FlaskForm):
+    search2 = StringField('Search', description="Please enter meal you wish to search for.")
+
+
 class KitchenForm(FlaskForm):
     stock_name = StringField('Stock Name', validators=[DataRequired()], description="Please enter stock name.")
     quantity = IntegerField('Quantity', validators=[DataRequired()], description="Please enter kitchen stock.")

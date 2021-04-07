@@ -8,7 +8,7 @@ import os
 from app import app
 from flask import render_template, request, redirect, url_for, flash, session, abort,send_from_directory
 from werkzeug.utils import secure_filename
-from .forms import RecipeForm, SignUpForm, LoginForm, SearchForm,KitchenForm
+from .forms import RecipeForm, SignUpForm, LoginForm, SearchForm,KitchenForm,SearchForm2
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.security import check_password_hash
 from flask_mysqldb import MySQL
@@ -23,21 +23,17 @@ app.config['MYSQL_DB']='mealplanner'
 
 mysql=MySQL(app)
 
-###
-# Routing for your application.
-###
-
+#This Home function displays the Supermarket Shopping List
 @app.route('/')
 def home():
     """Render website's home page."""
-    return render_template('home.html')
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute('CALL supermarketlist(%s)',(session['id'],))     
+    marketlist = cur.fetchall()
+    cur.close()
+    return render_template('home.html', marketlist=marketlist)
 
-
-@app.route('/about/')
-def about():
-    """Render the website's about page."""
-    return render_template('about.html', name="Mary Jane")
-
+#This function allows a user to login into the application
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
@@ -57,19 +53,11 @@ def login():
         else:
             flash('Error.', 'danger')
             return "error"
-        # user = UserProfile.query.filter_by(username=username).first()
-        # if user is not None and check_password_hash(user.password,password):
-        #     remember_me = False
-        #     if 'remember_me' in request.form:
-        #         remember_me = True
-        #     login_user(user, remember=remember_me)
-        #     flash('Login successful!', 'success')
-        #     return redirect(url_for("secure_page"))
-        # else:
-        #     flash('Username or password is incorrect.', 'danger')   
+
     flash_errors(form)
     return render_template("login.html", form=form)
 
+#This function allows a user to log out of the application
 @app.route("/logout")
 def logout():
     session.pop('loggedin', None)
@@ -78,68 +66,48 @@ def logout():
     session.pop('username', None)
     return redirect(url_for('login'))    
 
-@app.route("/kitchen_stock")
+#This function allows a user to add ingredients that are in their kitchen
+@app.route("/kitchen_stock",  methods = ['GET', 'POST'])
 def kitchen_stock():
     form=KitchenForm()
+    
+    if request.method == 'POST' :
+        stock_name = form.stock_name.data
+        quantity = form.quantity.data
+
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cur.execute("INSERT INTO kitchen_stock(stock_name, quantity) VALUES (%s,%s)", (stock_name, quantity))
+        mysql.connection.commit()
+        cur.close()
+        
+        return redirect(url_for('home'))
+
     return render_template('kitchen_stock.html', form=form)
 
-
-
-@app.route("/profile")
-# @login_required
+@app.route("/profile" , methods=["GET", "POST"])
 def profile():
-   
-
-    # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # cur.execute('SELECT * FROM recipe WHERE recipe_id = %s', (p_meals['recipe_id']))     
-    # p_recipe = cur.fetchall()
-    # cur.close()
-    
-
+    form = SearchForm2()
 
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     if "loggedin" in session:
-        cur.execute('SELECT * FROM account WHERE account_id = %s', (session['id'],))        
+        cur.execute('SELECT * FROM account WHERE account_id = %s', (session['id'],)) 
         user = cur.fetchone()
-        # firstname = user['firstname']
-        # lastname = user['lastname']
-        # username = user['username']
-        # firstname = user['firstname']
-        # age = user['age']
-        # gender = user['gender']
-        # weight = user['weight']
-        # height = user['height']
 
-        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # cur.execute('SELECT * FROM meal_plan join instructions on recipe_id join ingredients on recipe_id WHERE account_id = %s and', (session['id'],)) 
-        # cur.execute('SELECT * FROM meal_plan JOIN instructions ON instructions.recipe_id=meal_plan.recipe_id  JOIN recipe ON recipe.recipe_id=meal_plan.recipe_id  JOIN ingredients ON ingredients.recipe_id=meal_plan.recipe_id ')     
-        cur.execute('SELECT * FROM recipe WHERE recipe_id IN (SELECT recipe_id FROM meal_plan)') 
-        p_meals = cur.fetchall()
-        cur.close()
+        if request.method == 'POST' :
+            
+            search=form.search2.data    
 
-        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # cur.execute('SELECT * FROM meal_plan') 
-        # mealplan = cur.fetchone()
-        # cur.close()
-
-        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # cur.execute('SELECT * FROM ingredients WHERE recipe_id IN (SELECT recipe_id FROM meal_plan)') 
-        # ingredients = cur.fetchall()
-        # cur.close()
-
-        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # cur.execute('SELECT calories_count, SUM(calories_count) AS totalcalories FROM ingredients WHERE recipe_id IN (SELECT recipe_id FROM meal_plan)') 
-        # total_calories = cur.fetchall()
-        # cur.close()
-
-       
-
-        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # cur.execute('CALL CalculateTotalCalories(%s)', (id,))     
-        # total_calories = cur.fetchone()
-        # cur.close()
-        
-    return render_template("profile.html", user=user,p_meals=p_meals)
+            cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cur.execute(' SELECT * FROM recipe WHERE recipe_id IN (SELECT recipe_id FROM meal_plan WHERE meal_week = %s)', (search,)) 
+            p_meals = cur.fetchall()
+            cur.close()
+        else:
+            cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cur.execute('SELECT * FROM recipe WHERE recipe_id IN (SELECT recipe_id FROM meal_plan WHERE account_id=%s)',(session['id'],)) 
+            p_meals = cur.fetchall()
+            cur.close()
+            
+    return render_template("profile.html", user=user,p_meals=p_meals, form=form)
 
 @app.route('/results', methods = ['GET', 'POST'])
 def results():
@@ -159,7 +127,7 @@ def recipe():
     recipeform=RecipeForm()
 
     if request.method == 'POST' :
-        recipe_name = recipeform.recipe_name.data
+        recipe_name = recipeform.recipe_name.data 
         instructions = recipeform.procedure.data
         prep_time = recipeform.prep_time.data
         mealtype = recipeform.mealtype.data
@@ -184,13 +152,11 @@ def recipe():
         recipe_id=recipe_id['MAX(recipe_id)']
         cur.close()
 
-
         for i in range(len(ingredients_name)):
             cur=mysql.connection.cursor()
             cur.execute("INSERT INTO ingredients (ingredient_name,calories_count,measurement,recipe_id) VALUES (%s,%s,%s,%s)", (ingredients_name[i], calories[i], measurements[i],recipe_id))
             mysql.connection.commit()
             cur.close()
-
 
         instructionslst=instructions.split(',')
         for i in range(len(instructionslst)):
@@ -198,25 +164,12 @@ def recipe():
             cur.execute("INSERT INTO instructions (step_no,instruction,recipe_id) VALUES (%s,%s,%s)", (i, instructionslst[i], recipe_id))
             mysql.connection.commit()
             cur.close()
-        
 
         flash('You have sucessfully added a recipe', 'success')
         return redirect(url_for('home'))
     
     flash_errors(recipeform)
     return render_template('recipe.html', form=recipeform)
-
-# @app.route("/view_meals")
-# def view_meals():
-
-#     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    
-#     if "loggedin" in session:
-#         cur.execute('SELECT * FROM recipe ORDER BY recipe_id')        
-#         recipes = cur.fetchall()
-    
-#         return render_template('view_meals.html', recipes=recipes)
-
 
 def MagerDicts(dict1,dict2):
     if isinstance(dict1,list) and isinstance(dict2,list):
@@ -238,11 +191,6 @@ def AddMeal():
             print(session['mealcart'])
             if recipe_id in session['mealcart']:
                 print("Already in cart")
-                # for key,item in session['mealcart'].items():
-                #     if int(key)==int(recipe_id):
-                #         session.modified=True
-                        # meal['quantity'] += 1
-                    # Check over part 28 still not working
             else:
                 session['mealcart']=MagerDicts(session['mealcart'],DictItems)
                 return redirect("search_meal")
@@ -266,16 +214,28 @@ def deleteitemcart(code):
 
 @app.route('/checkout', methods=['POST', 'GET'])
 def checkout():
+    breakfast=0
+    lunch=0
+    dinner=0
     week_date=request.form.get('week-date')
-    if request.method=='POST':
+    for key,item in session['mealcart'].items():
+        if(item['type']=='Breakfast'):
+            breakfast+=1
+        if(item['type']=='Lunch'):
+            lunch+=1
+        if(item['type']=='Dinner'):
+            dinner+=1
+    if(breakfast==5 and lunch==5 and dinner==5 and request.method=='POST'):
         for key,item in session['mealcart'].items():
             cur=mysql.connection.cursor()
             cur.execute("INSERT INTO meal_plan (meal_week,recipe_id,account_id) VALUES (%s,%s,%s)", (week_date, key, session['id'],))
             mysql.connection.commit()
             cur.close()
-        # session.pop('mealcart', None)
+        session.pop('mealcart', None)
         return redirect(url_for('search_meal'))
-    return render_template('meal_plan.html')
+    flash('SELECT 15 MEALS FOR A MEAL PLAN :- 5 FOR EACH MEAL TYPE','danger')
+    flash('You only selected '+str(breakfast+lunch+dinner),'danger')
+    return redirect(url_for('getmeals'))
 
 @app.route("/meal-plan")
 def getmeals():
@@ -283,12 +243,8 @@ def getmeals():
     cur.execute('SELECT MAX(meal_week) FROM meal_plan WHERE account_id = %s', (session['id'],))        
     week = cur.fetchone()
     cur.close()
-    week=week['MAX(meal_week)']
-    #probablt afi pop d time
-    #try stroring in list and then pop n add
-    #test the date part still not fix 
-    # if(week=='None'):
-    #     week=week['MAX(meal_week)']+timedelta(days=10)
+    if(week['MAX(meal_week)']!=None):
+        week=week['MAX(meal_week)']+timedelta(days=5)
     newdate = date.today()
     if 'mealcart' not in session:
         return redirect(request.referrer)
@@ -320,7 +276,6 @@ def meal_detail(id):
     cur.close()
 
     return render_template('meal_detail.html', ingredient=ingredient, recipes=recipes, instruction=instruction, total_calories=total_calories)
-    # return redirect(url_for("search_meal"))
 
 @app.route("/search_meal", methods=["GET", "POST"])
 def search_meal():
@@ -329,8 +284,7 @@ def search_meal():
     if request.method == 'POST' and form.validate_on_submit():
         search = form.search.data
 
-        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        # cur.execute('SELECT * FROM recipe WHERE recipe_name like %s OR totalcalories <= %s', ('%' + search + '%', search,)) 
+        cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor) 
         cur.execute('CALL SearchFilter(%s)', (search,))        
         recipes = cur.fetchall()
 
@@ -374,9 +328,7 @@ def signup():
         weight = form.weight.data
         allergies = form.allergies.data
         dietarylifestyle = form.dietarylifestyle.data
-        dietaryrestrictions = form.dietaryrestrictions.data 
         goal = form.goal.data
-        dailycalories = form.dailycalories.data
         photo = form.photo.data
         filename = secure_filename(photo.filename)
         photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -388,9 +340,6 @@ def signup():
         flash("Signup Successful!", 'success')
         return redirect(url_for('login'))
     return render_template('signup.html',form=form)
-###
-# The functions below should be applicable to all Flask apps.
-###
 
 # Flash errors from the form if validation fails
 def flash_errors(form):

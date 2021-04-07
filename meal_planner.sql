@@ -66,11 +66,11 @@ DROP TABLE IF EXISTS kitchen_stock;
 
 CREATE TABLE kitchen_stock(
     stock_id INT NOT NULL unique AUTO_INCREMENT,
-    mealplan_id INT NOT NULL,
+    -- mealplan_id INT NOT NULL,
     stock_name VARCHAR(200),
     quantity INT,
     PRIMARY KEY(stock_id),
-    FOREIGN KEY(mealplan_id) REFERENCES meal_plan(mealplan_id) ON DELETE CASCADE ON UPDATE CASCADE
+    -- FOREIGN KEY(mealplan_id) REFERENCES meal_plan(mealplan_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 DROP PROCEDURE IF EXISTS FindIngredients;
@@ -88,6 +88,7 @@ DELIMITER //
 CREATE PROCEDURE  CalculateTotalCalories(IN id INT)
 BEGIN
 SELECT calories_count,SUM(calories_count) AS totalcalories FROM ingredients WHERE recipe_id = id GROUP BY recipe_id;
+UPDATE recipe set totalcalories = (SELECT SUM(calories_count) FROM ingredients WHERE recipe_id = id GROUP BY recipe_id) WHERE recipe_id = id;
 END //
 DELIMITER ;
 
@@ -95,16 +96,16 @@ DROP PROCEDURE IF EXISTS SearchFilter;
 DELIMITER //
 CREATE PROCEDURE SearchFilter(IN searchitem VARCHAR(100))
 BEGIN
-SELECT * FROM recipe WHERE recipe_name like CONCAT('%',searchitem,'%') OR totalcalories <= searchitem;
+SELECT * FROM recipe WHERE recipe_name like CONCAT('%',searchitem,'%') OR totalcalories <= searchitem OR meal_type like CONCAT('%',searchitem,'%');
 END //
 DELIMITER ;
 
 DROP PROCEDURE IF EXISTS supermarketlist;
 
 DELIMITER //
-CREATE PROCEDURE supermarketlist()
+CREATE PROCEDURE supermarketlist(IN id INT)
 BEGIN
-SELECT ingredient_name FROM ingredients JOIN recipe ON recipe.recipe_id=ingredients.recipe_id JOIN meal_plan on meal_plan.recipe_id = recipe.recipe_id WHERE ingredient_name NOT IN (SELECT stock_name FROM kitchen_stock);
+SELECT ingredient_name, measurement FROM ingredients JOIN recipe ON recipe.recipe_id=ingredients.recipe_id JOIN meal_plan on meal_plan.recipe_id = recipe.recipe_id WHERE meal_plan.account_id= id and ingredient_name NOT IN (SELECT stock_name FROM kitchen_stock);
 END //
 DELIMITER ;
 

@@ -59,8 +59,11 @@
             </ul>
             {% endfor %}
                 
-            <div class="btn1" style="text-align: center;">
-                <a href="#" class="btn btn-primary">Add Recipe</a>
+            <div class="btn1">
+                <form  action="{{url_for('AddMeal')}}" method="POST">
+                    <input type="hidden" name="recipe_id" value="{{recipe.recipe_id}}">
+                    <button type="submit" class="btn btn-primary">Add Recipe</button>
+                </form>
             </div>
             
         </div>
