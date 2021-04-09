@@ -8,10 +8,10 @@ from random import randint
 from datetime import date
 import os
 date_today = date.today()
-path='/media/michel/External Drive/db'
-filename="project2.sql"
-completename=os.path.join(path, filename)
-f = open(completename, "w")
+# path='/media/michel/External Drive/db'
+# filename="project2.sql"
+# completename=os.path.join(path, filename)
+f = open('populate.sql', "w")
 
 usertable=200000
 
